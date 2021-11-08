@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const bodyParser = require('koa-bodyparser')
 const KoaLogger = require('koa-logger')
+const cors = require('koa2-cors')
 const Router = require('koa-router')
 const books = require('../routes/booksRoute')
 const search = require('../routes/searchRoute')
@@ -10,6 +11,11 @@ const app = new Koa()
 
 const PORT = config.port
 
+app.use(cors({
+    origin:'*',
+    allowMethods: ['GET'],
+    
+}))
 app.use(KoaLogger())
 app.use(bodyParser())
 
@@ -23,6 +29,7 @@ router.get('/', async (ctx) => {
         console.error(e)
     }
 })
+
 
 app.use(router.routes())
 app.use(books.routes())
