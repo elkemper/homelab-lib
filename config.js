@@ -1,5 +1,5 @@
 module.exports = {
     port: parseInt(process.env.PORT) || 3214,
-    dbPath: '',
-    archivePath: '',
+    dbPath: process.env.DB_PATH || '',
+    archivePath: process.env.ARCHIVE_PATH || '',
 }
