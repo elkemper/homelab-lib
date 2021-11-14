@@ -1,5 +1,7 @@
+const config = require('../config')
 const Database = require('better-sqlite3')
-const db = new Database('../../librusec_local_fb2_new.hlc2', {
+
+const db = new Database(config.dbPath, {
     fileMustExist: true,
 })
 
