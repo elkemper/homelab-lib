@@ -1,5 +1,4 @@
-const JSZip = require('jszip')
-const fs = require('fs')
+const StreamZip = require('node-stream-zip')
 
 /**
  * extracts one file from acrhive
@@ -8,24 +7,11 @@ const fs = require('fs')
  * @returns  {Promise<Buffer>}
  */
 async function getFile(zipPath, searchedFile) {
-    let resultBuffer
+  const zip = new StreamZip.async({ file: zipPath })
+  const stm = await zip.stream(searchedFile)
 
-    const stream = fs.readFileSync(zipPath)
-
-    const zip = new JSZip()
-
-    await zip.loadAsync(stream).then((cont) => {
-        return zip
-            .file(searchedFile)
-            .async('nodebuffer')
-            .then((content) => {
-                resultBuffer = content
-                return content
-            })
-    })
-
-    
-    return resultBuffer
+  stm.on('end', () => zip.close())
+  return stm
 }
 
 module.exports = { getFile }
