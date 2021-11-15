@@ -6,19 +6,19 @@ const path = require('path')
 /**
  *
  * @param {string} bookId
- * @returns {Promise<Buffer>}
+ * @returns {Promise<Stream>}
  */
 async function getBookStream(bookId) {
-    console.log(bookId)
-    const bookData = await db.getBook(bookId)
-    console.log(bookData)
-    const zipPath = path.resolve(config.archivePath, bookData.Folder)
+  console.log(bookId)
+  const bookData = await db.getBook(bookId)
+  console.log(bookData)
+  const zipPath = path.resolve(config.archivePath, bookData.Folder)
 
-    return await getFile(zipPath, bookData.FileName + bookData.Ext)
+  return await getFile(zipPath, bookData.FileName + bookData.Ext)
 }
 
 async function getBookData(bookId) {
-    return await db.getBookData(bookId)
+  return await db.getBookData(bookId)
 }
 
 module.exports = { getBookStream, getBookData }

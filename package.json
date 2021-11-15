@@ -11,11 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "better-sqlite3": "^7.4.4",
-    "jszip": "^3.7.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",
     "koa-router": "^10.1.1",
-    "koa2-cors": "^2.0.6"
+    "koa2-cors": "^2.0.6",
+    "node-stream-zip": "^1.15.0"
   }
 }
