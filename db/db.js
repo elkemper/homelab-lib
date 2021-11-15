@@ -27,7 +27,7 @@ function search(searchString, offset) {
     join Authors aa on al.AuthorID = aa.AuthorID
     Where bb.IsDeleted = '0' AND aa.SearchName || bb.SearchTitle ||  aa.SearchName LIKE ?
     GROUP BY bb.BookID
-        LIMIT 50
+        LIMIT ${config.defaultPerPage+1}
         OFFSET ?
     `)
 

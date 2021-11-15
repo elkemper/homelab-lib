@@ -1,3 +1,4 @@
+const config = require('../config')
 const db = require('../db/db')
 
 /**
@@ -19,17 +20,16 @@ function repackWords(searchString) {
 async function searchByWords(searchString, page = 0) {
   const preparedSearchString = `%${repackWords(searchString)}%`
 
-  const offset = page * 50
-  const nextPageOffset = (page + 1) * 50
+  const offset = page * config.defaultPerPage
 
   const result = await db.search(preparedSearchString, offset)
 
-  const isMoreThanOnePage = result.length == 50
+  const nextPage = result.length > config.defaultPerPage
   const previousPage = page > 0
+  if (nextPage){
+    result.pop() // returning to user only ${defaultPerPage} results
+  }
 
-  const nextPage =
-    isMoreThanOnePage &&
-    (await db.search(preparedSearchString, nextPageOffset).length) > 0
 
   return {
     result,

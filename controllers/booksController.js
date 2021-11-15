@@ -1,5 +1,5 @@
 const db = require('../db/db')
-const { getFile } = require('../getFileFromZip/getFileFromZip')
+const { getFile } = require('../zip-utils/zipUtils')
 const config = require('../config')
 const path = require('path')
 
