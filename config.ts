@@ -5,6 +5,7 @@ export default {
   defaultPerPage: 50,
   adminUsername: process.env.ADMIN_USERNAME || 'adm',
   adminPassword: process.env.ADMIN_PASSWORD || 'adm',
+  salt: 10,
   jwtExpiration: '1d',
   jwtSecret: process.env.TOKEN_SECRET || 'ololol'
 }

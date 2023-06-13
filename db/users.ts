@@ -33,8 +33,8 @@ export function updateUser(user: User): void {
 }
 
 export function createUser(user: User): void {
-  const statement = db.prepare('INSERT INTO users (id, username, password, email) VALUES (?, ?, ?, ?)');
-  statement.run(user.id, user.username, user.password, user.email);
+  const statement = db.prepare('INSERT INTO users (username, password, email, id) VALUES (?, ?, ?, ?)');
+  statement.run(user.username, user.password, user.email, user.id);
 }
 
 export function deleteUser(id: number) {
