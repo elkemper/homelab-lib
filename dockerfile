@@ -1,4 +1,4 @@
-FROM node:16.13
+FROM node:20.3
 
 # set working directory
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY package-lock.json ./
 RUN npm install --silent
 
 ############
-FROM node:16.13-alpine
+FROM node:20.3-alpine
 WORKDIR /app
 
 # add `/app/node_modules/.bin` to $PATH

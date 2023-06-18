@@ -3,7 +3,7 @@ import config from './config';
 
 module.exports = {
   development: {
-    client: 'sqlite3',
+    client: 'better-sqlite3',
     connection: {
       filename: config.dbPath,
     },
