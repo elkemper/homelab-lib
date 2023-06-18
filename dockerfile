@@ -7,11 +7,11 @@ WORKDIR /app
 
 # install app dependencies
 COPY package.json ./
-COPY package-lock.json ./
+
 RUN npm install --silent
 
 ############
-FROM node:20.3-alpine
+FROM node:20.3-bullseye
 WORKDIR /app
 
 # add `/app/node_modules/.bin` to $PATH
