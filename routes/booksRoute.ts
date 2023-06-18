@@ -43,7 +43,7 @@ books.get('/books/:id/download', async (ctx) => {
   try {
     const bookId = ctx.params['id'];
     const token = await jwt.sign({ bookId }, config.jwtSecret, { expiresIn: '5m' });
-    const downloadUrl = `${ctx.request.header.origin}${config.backendUnderSlashApi ? '/api': ''}/books/download?token=${token}`; 
+    const downloadUrl = `${config.backendUnderSlashApi ? '/api': ''}/books/download?token=${token}`; 
 
     ctx.body = { downloadUrl };
   } catch (e) {
