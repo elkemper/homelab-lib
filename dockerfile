@@ -8,7 +8,7 @@ WORKDIR /app
 # install app dependencies
 COPY package.json ./
 
-RUN npm install --silent
+RUN npm install
 
 ############
 FROM node:20.3-bullseye
