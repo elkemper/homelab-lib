@@ -1,7 +1,7 @@
-import { Knex } from "knex";
+import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('migrations', function(table) {
+  await knex.schema.createTable('migrations', function (table) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.timestamp('applied_at').defaultTo(knex.fn.now());
