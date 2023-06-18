@@ -1,6 +1,5 @@
 require('ts-node/register');
-import config from "./config";
-
+import config from './config';
 
 module.exports = {
   development: {
@@ -11,7 +10,7 @@ module.exports = {
     useNullAsDefault: true,
     migrations: {
       directory: './migrations',
-      extension: 'ts'
+      extension: 'ts',
     },
   },
 };

@@ -22,5 +22,8 @@ COPY --from=0 /app/. ./
 # add app
 COPY . ./
 
+# compile typescript
+RUN npm run build
+
 # start app
-CMD ["npm", "start"]
+CMD ["npm", "run", "start-server"]

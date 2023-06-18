@@ -1,6 +1,6 @@
 # My SelfHosted Lib. Back
 
-Selfhosted app for search and download files from Zip Archives. 
+Selfhosted app for search and download files from Zip Archives.
 DB Scheme is pending
 
 ## Available Scripts
