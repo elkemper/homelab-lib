@@ -9,10 +9,15 @@ import userRoute from '../routes/userRoute';
 import config from '../config';
 import authRouter from '../routes/authRoute';
 import { createOrUpdateAdmin } from '../controllers/adminController';
+import { deleteAllTokens, startDeleteExpiredTokens } from '../utils/authUtils';
+import rateLimitMiddlaware from '../middleware/rateLimitMiddlaware';
+import startupChecks from '../utils/startupChecks';
 
 const app = new Koa();
 
 const PORT: number = config.port;
+
+app.use(rateLimitMiddlaware);
 
 app.use(
   cors({
@@ -24,7 +29,7 @@ app.use(KoaLogger());
 app.use(bodyParser());
 
 const router = new Router();
-router.get('/', async (ctx) => {
+router.get('/health', async (ctx) => {
   try {
     ctx.body = {
       success: true,
@@ -37,15 +42,17 @@ router.get('/', async (ctx) => {
 app.use(router.routes());
 app.use(books.routes());
 app.use(search.routes());
-app.use(authRouter.routes())
+app.use(authRouter.routes());
 app.use(userRoute.routes());
 
-
+startupChecks()
 
 const server = app
   .listen(PORT, async () => {
     console.log(`Server listening on port: ${PORT}`);
-    createOrUpdateAdmin()
+    createOrUpdateAdmin();
+    deleteAllTokens();
+    startDeleteExpiredTokens();
   })
   .on('error', (e) => {
     console.log(e);
