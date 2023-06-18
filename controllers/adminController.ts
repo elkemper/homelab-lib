@@ -1,18 +1,16 @@
-
-import db from '../db';
+import * as db from '../db';
 import config from '../config';
 import { hashPassword } from '../utils/authUtils';
 
 export async function createOrUpdateAdmin(): Promise<void> {
-  const adminUsername = config.adminUsername;
-  const adminPassword = config.adminPassword;
+  const { adminUsername, adminPassword } = config;
 
   try {
     const admin = await db.getUserById(0);
 
     if (admin) {
       const hashedPassword = await hashPassword(adminPassword);
-      return  db.updateUser({ id: 0, username: adminUsername, password: hashedPassword });
+      return db.updateUser({ id: 0, username: adminUsername, password: hashedPassword });
     } else {
       const hashedPassword = await hashPassword(adminPassword);
       return db.createUser({ id: 0, username: adminUsername, password: hashedPassword });

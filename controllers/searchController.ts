@@ -1,5 +1,5 @@
 import config from '../config';
-import db from '../db';
+import * as db from '../db';
 
 /**
  * Repacks the search string by converting it to uppercase and joining with '%'.

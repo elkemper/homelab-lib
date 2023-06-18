@@ -1,4 +1,4 @@
-import db from '../db';
+import * as db from '../db';
 import config from '../config';
 import path from 'path';
 import { BookDataWithSeries } from '../models/booksAndSearch';
@@ -14,7 +14,7 @@ async function getBookStream(bookId: string): Promise<any> {
 }
 
 async function getBookData(bookId: string): Promise<BookDataWithSeries[]> {
-  return  db.getBookData(bookId);
+  return db.getBookData(bookId);
 }
 
 export default { getBookStream, getBookData };
