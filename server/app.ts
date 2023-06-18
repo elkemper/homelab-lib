@@ -10,14 +10,14 @@ import config from '../config';
 import authRouter from '../routes/authRoute';
 import { createOrUpdateAdmin } from '../controllers/adminController';
 import { deleteAllTokens, startDeleteExpiredTokens } from '../utils/authUtils';
-import rateLimitMiddlaware from '../middleware/rateLimitMiddlaware';
+import rateLimitMiddleware from '../middleware/rateLimitMiddleware';
 import startupChecks from '../utils/startupChecks';
 
 const app = new Koa();
 
 const PORT: number = config.port;
 
-app.use(rateLimitMiddlaware);
+app.use(rateLimitMiddleware);
 
 app.use(
   cors({
