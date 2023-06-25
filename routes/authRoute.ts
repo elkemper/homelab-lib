@@ -11,13 +11,13 @@ authRouter.use(bodyParser());
 authRouter.post('/auth', async (ctx) => {
   try {
     const { username, password } = ctx.request.body as { username: string; password: string };
-    const user: User = await getUserByUsername(username);
+    const user: User = await getUserByUsername(username.toLowerCase());
     if (!user) {
       (ctx.status = 404), (ctx.body = { message: 'User not found.' });
       return;
     }
 
-    const token: string = await authenticateUser(username, password);
+    const token: string = await authenticateUser(username.toLowerCase(), password);
     if (!token) {
       ctx.status = 401;
       return;

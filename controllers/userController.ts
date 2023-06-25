@@ -6,7 +6,7 @@ import { hashPassword } from '../utils/authUtils';
 export async function createUser(userData: User) {
   const hashedPassword = await hashPassword(userData.password);
   const user: User = {
-    username: userData.username,
+    username: userData.username.toLocaleLowerCase(),
     password: hashedPassword,
   };
 

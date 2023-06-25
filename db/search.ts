@@ -14,7 +14,6 @@ export async function search(searchString: string, offset: number): Promise<Sear
     LEFT JOIN Author_List al ON bb.BookID = al.BookID
     JOIN Authors aa ON al.AuthorID = aa.AuthorID
     WHERE books_fts MATCH ?
-    GROUP BY bb.BookID
     LIMIT ${config.defaultPerPage}
     OFFSET ?
   `);
