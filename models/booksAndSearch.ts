@@ -1,9 +1,10 @@
 export interface SearchResult {
   BookID: string;
+  Title: string;
   FirstName: string;
   MiddleName: string;
   LastName: string;
-  Title: string;
+  Lang: string;
 }
 
 export interface BookData {
