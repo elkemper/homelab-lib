@@ -14,7 +14,7 @@ export default ratelimit({
     reset: 'Rate-Limit-Reset',
     total: 'Rate-Limit-Total',
   },
-  max: config.maxRequestsIn10sec,
+  max: config.maxRequestsPer10sec,
   disableHeader: false,
   whitelist: (ctx) => ctx.method === 'OPTION',
 });

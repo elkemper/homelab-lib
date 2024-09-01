@@ -14,10 +14,15 @@ books.get('/books/download', async (ctx) => {
     const bookId = decoded.bookId;
 
     const bookstream = await booksController.getBookStream(bookId);
-    const bookData = await booksController.getBookData(bookId);
-    ctx.body = bookstream;
-    ctx.type = 'text/plain';
-    ctx.attachment(`${bookData[0].Title}.fb2`);
+    if (bookstream === null) {
+      ctx.status = 404;
+      ctx.body = 'Not Found';
+    } else {
+      const bookData = await booksController.getBookData(bookId);
+      ctx.body = bookstream;
+      ctx.type = 'text/plain';
+      ctx.attachment(`${bookData[0].Title}.fb2`);
+    }
   } catch (e) {
     console.error(e);
   }
@@ -43,7 +48,7 @@ books.get('/books/:id/download', async (ctx) => {
   try {
     const bookId = ctx.params['id'];
     const token = await jwt.sign({ bookId }, config.jwtSecret, { expiresIn: '5m' });
-    const downloadUrl = `${config.backendUnderSlashApi ? '/api': ''}/books/download?token=${token}`; 
+    const downloadUrl = `/books/download?token=${token}`;
 
     ctx.body = { downloadUrl };
   } catch (e) {
