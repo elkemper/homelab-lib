@@ -2,7 +2,6 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import KoaLogger from 'koa-logger';
 import cors from 'koa2-cors';
-import Router from 'koa-router';
 import books from '../routes/booksRoute';
 import search from '../routes/searchRoute';
 import userRoute from '../routes/userRoute';
@@ -12,6 +11,7 @@ import { createOrUpdateAdmin } from '../controllers/adminController';
 import { deleteAllTokens, startDeleteExpiredTokens } from '../utils/authUtils';
 import rateLimitMiddleware from '../middleware/rateLimitMiddleware';
 import startupChecks from '../utils/startupChecks';
+import health from '../routes/healthRoute';
 
 const app = new Koa();
 
@@ -28,18 +28,9 @@ app.use(
 app.use(KoaLogger());
 app.use(bodyParser());
 
-const router = new Router();
-router.get('/health', async (ctx) => {
-  try {
-    ctx.body = {
-      success: true,
-    };
-  } catch (e) {
-    console.error(e);
-  }
-});
 
-app.use(router.routes());
+
+app.use(health.routes());
 app.use(books.routes());
 app.use(search.routes());
 app.use(authRouter.routes());
