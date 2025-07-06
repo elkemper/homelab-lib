@@ -3,7 +3,23 @@ import config from './config';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export default function BookCard(props) {
+interface Book {
+  BookID: number;
+  Title: string;
+  Author: string;
+  Cover: string;
+  FirstName: string;
+  MiddleName: string;
+  LastName: string;
+  Lang: string;
+  // Add other properties of a book if known
+}
+
+interface BookCardProps {
+  book: Book;
+}
+
+export default function BookCard(props: BookCardProps) {
   const { book } = props;
 
   const url = `/books/${book.BookID}/download`;
@@ -11,10 +27,9 @@ export default function BookCard(props) {
 
   const httpClient = axios.create({
     baseURL: config.apiUrl,
-    url: '',
   });
 
-  const sendRequest = async (method, url, data) => {
+  const sendRequest = async (method: any, url: string, data?: any): Promise<void> => {
     const token = localStorage.getItem('token');
     const headers = {
       'Content-Type': 'application/json',
@@ -29,9 +44,9 @@ export default function BookCard(props) {
         data,
       });
 
-      return (window.location = config.apiUrl + response.data.downloadUrl);
+      window.location.href = config.apiUrl + response.data.downloadUrl;
     } catch (error) {
-      if (error.response) {
+      if (error?.response?.status) {
         const { status } = error.response;
         debugger;
         if (status === 401) {
@@ -50,7 +65,7 @@ export default function BookCard(props) {
     }
   };
 
-  const downloadBook = async (bookId) => {
+  const downloadBook = async (bookId: number) => {
     await sendRequest('GET', url);
   };
   return (
@@ -62,7 +77,7 @@ export default function BookCard(props) {
         </p>
         <small>Language: {book.Lang}</small>
         <br />
-        <button className="button--download" onClick={downloadBook}>
+        <button className="button--download" onClick={() => downloadBook(book.BookID)}>
           Download
         </button>
       </div>

@@ -49,7 +49,7 @@ app.use(apiRouter.routes());
 app.use(apiRouter.allowedMethods());
 
 // Serve static files from the React app
-const buildPath = path.resolve(__dirname, '../../../../packages/client/build');
+const buildPath = path.resolve(__dirname, '../../../packages/client/build');
 app.use(serve(buildPath));
 
 // Catch-all for client-side routing
