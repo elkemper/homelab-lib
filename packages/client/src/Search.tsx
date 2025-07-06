@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import config from './config';
 import BookCard from './bookCard';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 interface Book {
   BookID: number;
@@ -27,13 +28,13 @@ export default function Search() {
   const [count, setCount] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { token, logout } = useAuth();
 
   const httpClient = axios.create({
     baseURL: config.apiUrl,
   });
 
   const sendRequest = async (method: any, url: string, data?: any): Promise<SearchResponse> => {
-    const token = localStorage.getItem('token');
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
@@ -54,9 +55,7 @@ export default function Search() {
           const { status } = error.response;
 
           if (status === 401) {
-            localStorage.removeItem('token');
-            window.dispatchEvent(new Event('storage'));
-            navigate('/');
+            logout();
           } else {
             console.error(error);
           }

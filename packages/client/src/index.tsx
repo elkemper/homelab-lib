@@ -8,12 +8,9 @@ const container = document.getElementById('root');
 const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 root.render(
   <React.StrictMode>
-    <h1 className="title">HomeLab Lib</h1>
-    <div className="container">
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
 
