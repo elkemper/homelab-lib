@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Search from './Search';
 import Login from './Login';
+import { AuthProvider, useAuth } from './AuthContext';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  useEffect(() => {
-    function handleStorageChange() {
-      const token = localStorage.getItem('token');
-      console.log('change of storage');
-      setIsLoggedIn(!!token);
-    }
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+function AppContent() {
+  const { isLoggedIn } = useAuth();
 
   return (
-    // <Router>
     <Routes>
       <Route path="/" element={isLoggedIn ? <Navigate to="/search" /> : <Navigate to="/login" />} />
       <Route path="/search" element={isLoggedIn ? <Search /> : <Navigate to="/login" />} />
       <Route path="/login" element={isLoggedIn ? <Navigate to="/search" /> : <Login />} />
     </Routes>
-    // </Router>
+  );
+}
+
+function App() {
+  return (
+    <React.StrictMode>
+      <h1 className="title">HomeLab Lib</h1>
+      <div className="container">
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </div>
+    </React.StrictMode>
   );
 }
 

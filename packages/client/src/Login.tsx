@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import config from './config';
+import { useAuth } from './AuthContext';
 
 export default function Login() {
   const [username, setUsername] = useState<string>('');
@@ -10,6 +11,8 @@ export default function Login() {
   const [showError, setShowError] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -26,8 +29,7 @@ export default function Login() {
       });
       if (response.ok) {
         const { token } = await response.json();
-        localStorage.setItem('token', token);
-        window.dispatchEvent(new Event('storage'));
+        login(token);
         navigate('/');
       } else {
         setError('Неверный логин или пароль');
@@ -37,7 +39,8 @@ export default function Login() {
         }, 3000);
         console.log('Unsuccessful auth');
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Auth error', error);
     }
   };
