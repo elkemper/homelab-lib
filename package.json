@@ -1,41 +1,13 @@
 {
-  "name": "my-back-lib",
+  "name": "homelab-lib",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "db:migrations": "npx knex migrate:latest",
-    "start-server": "npm run db:migrations && node dist/server/app.js",
-    "start": "ts-node server/app.ts"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/better-sqlite3": "^7.6.11",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/koa-ratelimit": "^5.0.5",
-    "bcrypt": "^5.1.1",
-    "better-sqlite3": "^11.2.1",
-    "dotenv": "^16.4.5",
-    "jsonwebtoken": "^9.0.2",
-    "knex": "^2.4.2",
-    "koa": "^2.15.3",
-    "koa-bodyparser": "^4.4.1",
-    "koa-logger": "^3.2.1",
-    "koa-ratelimit": "^5.1.0",
-    "koa-router": "^10.1.1",
-    "koa2-cors": "^2.0.6",
-    "node-stream-zip": "^1.15.0",
-    "typescript": "^5.5.4"
-  },
-  "devDependencies": {
-    "@types/koa-bodyparser": "^4.3.10",
-    "@types/koa-logger": "^3.1.2",
-    "@types/koa-router": "^7.4.4",
-    "@types/koa2-cors": "^2.0.2",
-    "ts-node": "^10.9.1"
+    "start": "npm run start --workspace=packages/server",
+    "build:client": "npm run build --workspace=packages/client",
+    "build:server": "npm run build --workspace=packages/server",
+    "build": "npm run build:client && npm run build:server"
   }
 }

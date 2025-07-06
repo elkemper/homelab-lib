@@ -8,8 +8,12 @@ export function generateToken(username: string) {
     username,
   };
 
-  const token = jwt.sign(payload, config.jwtSecret, {
-    expiresIn: config.jwtExpiration,
+  if (!config.jwtSecret) {
+    throw new Error('JWT secret is not defined.');
+  }
+  const jwtSecret: string = config.jwtSecret;
+  const token = jwt.sign(payload, jwtSecret, {
+    expiresIn: '1h',
   });
   return token;
 }
@@ -34,11 +38,10 @@ export async function hashPassword(password: string): Promise<string> {
  * @returns Session token if authentication is successful, null otherwise.
  */
 export async function authenticateUser(username: string, password: string): Promise<string> {
-  // Retrieve the user from the database based on the provided username
   const user = await db.getUserByUsername(username);
-
-  // Check if the user exists and the password matches
-  if (user && (await bcrypt.compare(password, user.password))) {
+  if (user) {
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
     // Generate a session token
     const token = await generateToken(username);
     const { exp } = jwt.decode(token) as { exp: number };
@@ -46,6 +49,7 @@ export async function authenticateUser(username: string, password: string): Prom
     await db.saveSessionToken(user.id, token, exp);
 
     return token;
+  }
   }
 
   return null;

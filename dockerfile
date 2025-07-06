@@ -1,29 +1,31 @@
-FROM node:20.3
+FROM node:24.3-alpine AS builder
 
-# set working directory
 WORKDIR /app
 
-
-
-# install app dependencies
-COPY package.json ./
+COPY package.json ./ 
+COPY packages/client/package.json ./packages/client/
+COPY packages/server/package.json ./packages/server/
 
 RUN npm install
 
-############
-FROM node:20.3-bullseye
-WORKDIR /app
+COPY packages/client ./packages/client
+COPY packages/server ./packages/server
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
-
-COPY --from=0 /app/. ./
-
-# add app
-COPY . ./
-
-# compile typescript
+WORKDIR /app/packages/client
 RUN npm run build
 
-# start app
-CMD ["npm", "run", "start-server"]
+WORKDIR /app/packages/server
+RUN npm run build
+
+FROM node:24.3-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/packages/server/dist ./dist
+COPY --from=builder /app/packages/client/build ./packages/client/build
+COPY packages/server/package.json ./packages/server/
+COPY packages/server/node_modules ./packages/server/node_modules
+
+WORKDIR /app/packages/server
+
+CMD ["node", "dist/app.js"]
