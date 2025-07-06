@@ -1,10 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './app';
 import { BrowserRouter } from 'react-router-dom';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+root.render(
   <React.StrictMode>
     <h1 className="title">HomeLab Lib</h1>
     <div className="container">
@@ -12,7 +14,6 @@ ReactDOM.render(
         <App />
       </BrowserRouter>
     </div>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 

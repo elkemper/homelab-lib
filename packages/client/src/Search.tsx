@@ -4,20 +4,35 @@ import config from './config';
 import BookCard from './bookCard';
 import axios from 'axios';
 
+interface Book {
+  BookID: number;
+  Title: string;
+  Author: string;
+  Cover: string;
+  FirstName: string;
+  MiddleName: string;
+  LastName: string;
+  Lang: string;
+}
+
+interface SearchResponse {
+  result: Book[];
+  count: number;
+}
+
 export default function Search() {
-  const [query, setQuery] = useState('');
-  const [books, setBooks] = useState([]);
-  const [pageNo, setPageNo] = useState(0);
-  const [count, setCount] = useState(0);
-  const [isLoading, setLoading] = useState(false);
+  const [query, setQuery] = useState<string>('');
+  const [books, setBooks] = useState<Book[]>([]);
+  const [pageNo, setPageNo] = useState<number>(0);
+  const [count, setCount] = useState<number>(0);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const httpClient = axios.create({
     baseURL: config.apiUrl,
-    url: '',
   });
 
-  const sendRequest = async (method, url, data) => {
+  const sendRequest = async (method: any, url: string, data?: any): Promise<SearchResponse> => {
     const token = localStorage.getItem('token');
     const headers = {
       'Content-Type': 'application/json',
@@ -34,18 +49,22 @@ export default function Search() {
 
       return response.data;
     } catch (error) {
-      if (error.response) {
-        const { status, data } = error.response;
+      if (error?.response?.status) {
+        if (error.response) {
+          const { status } = error.response;
 
-        if (status === 401) {
-          localStorage.removeItem('token');
-          window.dispatchEvent(new Event('storage'));
-          navigate('/');
+          if (status === 401) {
+            localStorage.removeItem('token');
+            window.dispatchEvent(new Event('storage'));
+            navigate('/');
+          } else {
+            console.error(error);
+          }
+        } else if (error.request) {
+          console.error(error);
         } else {
           console.error(error);
         }
-      } else if (error.request) {
-        console.error(error);
       } else {
         console.error(error);
       }
@@ -54,7 +73,7 @@ export default function Search() {
     }
   };
 
-  const searchBooks = async (event) => {
+  const searchBooks = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (query === '') {
       return;
@@ -100,7 +119,7 @@ export default function Search() {
         <label className="label" htmlFor="pageNo">
           Page:{' '}
         </label>
-        <input className="input" type="text" name="p" value={pageNo} onChange={(e) => setPageNo(e.target.value)}></input>
+        <input className="input" type="text" name="p" value={pageNo} onChange={(e) => setPageNo(Number(e.target.value))}></input>
         <div>
           <label className="label" htmlFor="count">
             Found books: {count}

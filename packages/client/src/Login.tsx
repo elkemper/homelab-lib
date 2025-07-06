@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import config from './config';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
-  const [showError, setShowError] = useState(false);
+  const [showError, setShowError] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const body = {

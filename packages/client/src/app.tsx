@@ -5,7 +5,7 @@ import Search from './Search';
 import Login from './Login';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   useEffect(() => {
     function handleStorageChange() {
       const token = localStorage.getItem('token');

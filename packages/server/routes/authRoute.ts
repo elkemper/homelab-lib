@@ -5,7 +5,6 @@ import { getUserByUsername } from '../db/users';
 import User from '../models/User';
 import bodyParser from 'koa-bodyparser';
 
-console.log('authrouted loaded')
 const authRouter = new Router();
 authRouter.post('/auth', async (ctx) => {
   try {
