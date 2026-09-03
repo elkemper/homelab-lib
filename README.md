@@ -47,7 +47,7 @@ This will create `build` directory in `packages/client` and `dist` directory in 
 1.  **Start the Server:**
     From the root (`homelab-lib`):
     ```bash
-npm run start --workspace=packages/server
+    npm run start --workspace=packages/server
     ```
 
 2.  **Access the Application:**
@@ -58,11 +58,11 @@ npm run start --workspace=packages/server
 1.  **Build the Docker image:**
     From the root (`homelab-lib`):
     ```bash
-docker build -t homelab-lib .
+    docker build -t homelab-lib .
     ```
 
 2.  **Run the Docker container:**
     ```bash
-docker run -p 3214:3214 homelab-lib
+    docker run -p 3214:3214 homelab-lib
     ```
     (Adjust port mapping if your server runs on a different port).
