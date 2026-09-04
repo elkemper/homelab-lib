@@ -1,0 +1,1 @@
+placeholder - not a real zip. Only fs.existsSync is tested, file content is never read.

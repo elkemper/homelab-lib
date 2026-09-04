@@ -14,5 +14,5 @@ export default () => {
 
 function logStartupError(errStr: string): void {
   console.error('\x1b[41m%s\x1b[0m', `>>> ${errStr} <<<`);
-  process.kill(1);
+  process.exit(1);
 }
