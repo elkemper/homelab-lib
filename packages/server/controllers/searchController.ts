@@ -9,9 +9,10 @@ import * as db from '../db';
  * @returns The search results.
  */
 async function searchByWords(searchString: string, page = 0) {
-  const offset = page * config.defaultPerPage;
+  const safePage = Number.isInteger(page) && page >= 0 ? page : 0;
+  const offset = safePage * config.defaultPerPage;
   let resultCount: number | false;
-  if(page === 0) {
+  if(safePage === 0) {
      resultCount = (await db.countResults(searchString))
      console.log('result count: '+ resultCount)
   } else {
