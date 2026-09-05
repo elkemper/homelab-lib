@@ -10,9 +10,9 @@ interface Book {
   Title: string;
   Author: string;
   Cover: string;
-  FirstName: string;
-  MiddleName: string;
-  LastName: string;
+  authors: string;
+  SeriesTitle: string | null;
+  SeqNumber: number | null;
   Lang: string;
 }
 

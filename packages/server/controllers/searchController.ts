@@ -1,9 +1,11 @@
 import config from '../config';
 import * as db from '../db';
+import { buildMatchQuery } from '../db/search';
 
 
 /**
  * Searches by words using the specified search string.
+ * Count comes back in the same DB call, on every page.
  * @param searchString - The search string to search by.
  * @param page - The page number of the search results.
  * @returns The search results.
@@ -11,17 +13,17 @@ import * as db from '../db';
 async function searchByWords(searchString: string, page = 0) {
   const safePage = Number.isInteger(page) && page >= 0 ? page : 0;
   const offset = safePage * config.defaultPerPage;
-  let resultCount: number | false;
-  if(safePage === 0) {
-     resultCount = (await db.countResults(searchString))
-     console.log('result count: '+ resultCount)
-  } else {
-    resultCount = false
+  const matchQuery = buildMatchQuery(searchString ?? '');
+  if (matchQuery === null) {
+    return {
+      result: [],
+      count: 0,
+    };
   }
-  const result = await db.search(searchString, offset);
+  const { rows, total } = await db.search(matchQuery, config.defaultPerPage, offset);
   return {
-    result,
-    count: resultCount
+    result: rows,
+    count: total,
   };
 }
 
