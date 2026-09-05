@@ -28,8 +28,10 @@ seed() {
 }
 
 run_tests() {
-  sh "$ROOT/packages/tests/e2e/wait-for-health.sh"
-  (cd "$ROOT" && npm run test:e2e --workspace=homelab-lib.tests)
+  # Explicit && chain: inside run_tests, set -e is disabled (callers use
+  # run_tests || ...), so a failed health check must not fall through to vitest.
+  sh "$ROOT/packages/tests/e2e/wait-for-health.sh" && \
+    (cd "$ROOT" && npm run test:e2e --workspace=homelab-lib.tests)
 }
 
 if [ "$TARGET" = "local" ]; then
