@@ -122,8 +122,7 @@ after a root `npm install`, which prunes them).
 
 - `ci.yml` on every push/PR: `unit` (tsc, client build, unit tests), then
   `e2e` (seed → compose → API suite → logs on failure → teardown).
-- Tag a green commit `git tag release-1.0 && git push origin release-1.0`
-  (`:` is illegal in git tags). `release.yml` publishes
-  `elkemper/homelab-lib:1.0` + `:latest` (amd64/arm64).
+- Tag a green commit `git tag release-1.0 && git push origin release-1.0`. 
+- `release.yml` publishes  `elkemper/homelab-lib:1.0` + `:latest` (amd64/arm64).
 - One-time: repo Settings → Secrets → Actions →
   `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` (Read & Write PAT).
