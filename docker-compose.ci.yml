@@ -19,7 +19,7 @@ services:
       - REQUEST_RATE_LIMIT=1000
       - PORT=3214
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3214/api/health"]
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:3214/api/health"]
       interval: 5s
       timeout: 3s
       retries: 20
