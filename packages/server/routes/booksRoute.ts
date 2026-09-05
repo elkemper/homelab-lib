@@ -9,11 +9,25 @@ const books = new Router();
 books.get('/books/download', async (ctx) => {
   try {
     const { token } = ctx.request.query as { token: string };
-    console.log(`tokern ${token}`);
-    const decoded = (await jwt.verify(token, config.jwtSecret)) as { bookId: string };
+    let decoded: { bookId: string };
+    try {
+      decoded = (await jwt.verify(token, config.jwtSecret)) as { bookId: string };
+    } catch {
+      ctx.status = 401;
+      ctx.body = 'Invalid or expired download token';
+      return;
+    }
     const bookId = decoded.bookId;
 
-    const bookstream = await booksController.getBookStream(bookId);
+    let bookstream: unknown;
+    try {
+      bookstream = await booksController.getBookStream(bookId);
+    } catch (e) {
+      console.error(e);
+      ctx.status = 500;
+      ctx.body = 'Failed to read book archive';
+      return;
+    }
     if (bookstream === null) {
       ctx.status = 404;
       ctx.body = 'Not Found';
@@ -25,6 +39,8 @@ books.get('/books/download', async (ctx) => {
     }
   } catch (e) {
     console.error(e);
+    ctx.status = 500;
+    ctx.body = 'Internal error';
   }
 });
 

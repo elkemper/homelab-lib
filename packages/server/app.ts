@@ -59,6 +59,25 @@ app.use(async (ctx, next) => {
 
 startupChecks()
 
+// Log resolved storage paths at boot: relative ARCHIVE_PATH/DB_PATH are
+// resolved against process.cwd() (where `node` was launched), not against
+// the .env location — a classic source of 404s on /books/download.
+{
+  const resolvedArchive = path.resolve(config.archivePath || '');
+  const resolvedDb = config.dbPath ? path.resolve(config.dbPath) : '(unset)';
+  console.log(`ARCHIVE_PATH=${config.archivePath} -> ${resolvedArchive}`);
+  console.log(`DB_PATH=${config.dbPath} -> ${resolvedDb}`);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require('fs');
+    if (!fs.existsSync(resolvedArchive)) {
+      console.warn(`WARNING: archive dir does not exist: ${resolvedArchive} — downloads will 404`);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 const server = app
   .listen(PORT, async () => {
     console.log(`Server listening on port: ${PORT}`);
