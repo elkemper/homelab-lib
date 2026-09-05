@@ -18,7 +18,9 @@ export default function Pagination({ page, count, onGo }: Props) {
 
   const submitJump = (e: Event) => {
     e.preventDefault();
+    if (!jump.trim()) return;
     const n1 = Number(jump) - 1; // user-facing is 1-based
+    if (!Number.isInteger(n1)) return;
     onGo(clampPage(n1, pages));
     setJump('');
   };

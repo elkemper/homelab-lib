@@ -21,7 +21,10 @@ function parseAdmin(token: string | null): boolean {
   try {
     const part = token.split('.')[1];
     if (!part) return false;
-    const json = JSON.parse(atob(part));
+    // JWT is base64url, atob wants base64: restore +/ and padding.
+    const base64 = part.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+    const json = JSON.parse(atob(padded));
     return json.role === 'admin' || json.isAdmin === true || json.username === 'admin';
   } catch {
     return false;

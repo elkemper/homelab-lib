@@ -89,7 +89,7 @@ export function detectLang(): Lang {
 }
 
 export function translate(lang: Lang, key: MsgKey, vars?: Record<string, string | number>): string {
-  let s: string = dict[lang][key] as string;
+  let s: string = (dict[lang][key] ?? dict.en[key] ?? key) as string;
   if (vars) {
     for (const k of Object.keys(vars)) {
       s = s.replace('{' + k + '}', String(vars[k]));

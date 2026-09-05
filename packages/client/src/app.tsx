@@ -6,7 +6,7 @@ import Users from './pages/Users';
 import { useRoute } from './lib/router';
 
 function Shell() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAdmin } = useAuth();
   const route = useRoute();
 
   if (!isLoggedIn) {
@@ -19,12 +19,14 @@ function Shell() {
       </>
     );
   }
+  // Server enforces RBAC (requireAdmin); this guard is UX-only so a
+  // non-admin never sees the admin page. 'book' has no page yet and
+  // falls back to search until the book card route lands.
+  const showUsers = route.name === 'users' && isAdmin;
   return (
     <>
       <Header />
-      <main className="container">
-        {route.name === 'users' ? <Users /> : <Search route={route} />}
-      </main>
+      <main className="container">{showUsers ? <Users /> : <Search route={route} />}</main>
     </>
   );
 }

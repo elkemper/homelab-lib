@@ -1,17 +1,23 @@
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config()
+try {
+  dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+} catch {
+  // ignore — missing file is fine when env comes from elsewhere
+}
+dotenv.config();
 export default {
   port: parseInt(process.env.PORT) || 3214,
   dbPath: process.env.DB_PATH,
   archivePath: process.env.ARCHIVE_PATH,
   defaultPerPage: 50,
-  adminUsername: process.env.ADMIN_USERNAME,
-  adminPassword: process.env.ADMIN_PASSWORD || 'admin',
+  adminUsername: process.env.ADMIN_USERNAME || '',
+  adminPassword: process.env.ADMIN_PASSWORD || '',
   salt: 10,
   sessionCheckingTimeout: 24 * 60 * 60 * 1000,
   jwtExpiration: '1d',
-  jwtSecret: process.env.JWT_SECRET || 'supersecretjwtkey',
+  jwtSecret: process.env.JWT_SECRET || '',
   maxRequestsPer10sec: parseInt(process.env.REQUEST_RATE_LIMIT) || 20,
   allowedOrigins: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000'],
 };

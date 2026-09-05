@@ -44,36 +44,36 @@ export default function Search({ route }: { route: Route }) {
     [token, logout, t]
   );
 
-  // deep-link: hash carries q/p (back button, shared links, e-ink reload)
+  // Deep-link: hash carries q/p (back button, shared links, e-ink reload).
+  // This effect is the SOLE fetcher — submit()/goPage() only navigate.
   useEffect(() => {
     setInput(route.query);
-    if (route.query.trim().length >= 2) {
+    const q = route.query.trim();
+    if (q.length >= 2) {
       run(route.query, route.page);
-    } else if (route.query === '') {
+    } else {
+      // '' or 1 char: never show stale results.
       setBooks([]);
       setCount(0);
       setSearched(false);
+      setError('');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.query, route.page]);
+  }, [route.query, route.page, run]);
 
   const submit = (e: Event) => {
     e.preventDefault();
     const q = input.trim();
-    if (q.length < 2 && q.length > 0) return;
-    navigate({ name: 'search', query: q, page: 0, bookId: null });
-    if (q === '') {
-      setBooks([]);
-      setCount(0);
-      setSearched(false);
+    if (q.length === 1) return;
+    // Same hash → no hashchange event → fetch directly.
+    if (route.query === q && route.page === 0 && q !== '') {
+      run(q, 0);
       return;
     }
-    run(q, 0);
+    navigate({ name: 'search', query: q, page: 0, bookId: null });
   };
 
   const goPage = (p: number) => {
     navigate({ name: 'search', query: route.query, page: p, bookId: null });
-    run(route.query, p);
     try {
       window.scrollTo({ top: 0 });
     } catch {

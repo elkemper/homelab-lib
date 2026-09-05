@@ -19,11 +19,22 @@ describe('createUser', () => {
     vi.mocked(hashPassword).mockResolvedValue('hashed');
     vi.mocked(db.createUser).mockResolvedValue({ id: 1 } as any);
 
-    await createUser({ username: 'TestUser', password: 'secret' });
+    await createUser({ username: 'TestUser', password: 'secret12' });
 
-    expect(hashPassword).toHaveBeenCalledWith('secret');
+    expect(hashPassword).toHaveBeenCalledWith('secret12');
     expect(db.createUser).toHaveBeenCalledWith({
       username: 'testuser',
+      password: 'hashed',
+    });
+  });
+
+  it('rejects short passwords and ignores client-supplied id', async () => {
+    vi.mocked(hashPassword).mockResolvedValue('hashed');
+    await expect(createUser({ username: 'bob', password: 'short' })).rejects.toThrow();
+    expect(db.createUser).not.toHaveBeenCalledWith(expect.objectContaining({ username: 'bob' }));
+    await createUser({ username: 'bob', password: 'longenough1', id: 0 } as any);
+    expect(db.createUser).toHaveBeenCalledWith({
+      username: 'bob',
       password: 'hashed',
     });
   });

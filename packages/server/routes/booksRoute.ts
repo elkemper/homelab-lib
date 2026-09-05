@@ -34,8 +34,8 @@ books.get('/books/download', async (ctx) => {
     } else {
       const bookData = await booksController.getBookData(bookId);
       ctx.body = bookstream;
-      ctx.type = 'text/plain';
-      ctx.attachment(`${bookData[0].Title}.fb2`);
+      ctx.type = 'application/xml';
+      ctx.attachment(safeDownloadName(bookData.length ? bookData[0].Title : null, bookId));
     }
   } catch (e) {
     console.error(e);
@@ -73,3 +73,13 @@ books.get('/books/:id/download', async (ctx) => {
 });
 
 export default books;
+
+/**
+ * DB titles go into Content-Disposition — strip anything that could break
+ * the header (quotes, CRLF, non-ASCII). Falls back to book-<id>.fb2.
+ */
+function safeDownloadName(title: string | null, bookId: string): string {
+  const cleaned = (title || '').replace(/[^A-Za-z0-9 _.-]+/g, '').trim().slice(0, 80);
+  const base = cleaned || `book-${bookId}`;
+  return `${base}.fb2`;
+}
