@@ -26,7 +26,11 @@ app.use(rateLimitMiddleware);
 
 app.use(
   cors({
-    origin: '*',
+    origin: (ctx) => {
+      const requestOrigin = ctx.get('Origin');
+      if (!requestOrigin) return false;
+      return config.allowedOrigins.includes(requestOrigin) ? requestOrigin : false;
+    },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
   })
 );
@@ -52,12 +56,37 @@ app.use(apiRouter.allowedMethods());
 const buildPath = path.resolve(__dirname, '../../../packages/client/build');
 app.use(serve(buildPath));
 
-// Catch-all for client-side routing
+// Catch-all for client-side routing. Must not swallow unknown /api/*
+// routes into index.html (that would be a 200 with HTML body).
 app.use(async (ctx, next) => {
+  if (ctx.path.startsWith('/api')) {
+    ctx.status = 404;
+    ctx.body = { message: 'Not found' };
+    return;
+  }
   await send(ctx, 'index.html', { root: buildPath });
 });
 
 startupChecks()
+
+// Log resolved storage paths at boot: relative ARCHIVE_PATH/DB_PATH are
+// resolved against process.cwd() (where `node` was launched), not against
+// the .env location — a classic source of 404s on /books/download.
+{
+  const resolvedArchive = path.resolve(config.archivePath || '');
+  const resolvedDb = config.dbPath ? path.resolve(config.dbPath) : '(unset)';
+  console.log(`ARCHIVE_PATH=${config.archivePath} -> ${resolvedArchive}`);
+  console.log(`DB_PATH=${config.dbPath} -> ${resolvedDb}`);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require('fs');
+    if (!fs.existsSync(resolvedArchive)) {
+      console.warn(`WARNING: archive dir does not exist: ${resolvedArchive} — downloads will 404`);
+    }
+  } catch {
+    // ignore
+  }
+}
 
 const server = app
   .listen(PORT, async () => {

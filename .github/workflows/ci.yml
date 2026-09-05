@@ -16,6 +16,14 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=4096
       - run: npm test
+        env:
+          # Unit tests import server config, which has no insecure fallbacks:
+          # dummy values so generateToken/startupChecks see a present secret.
+          JWT_SECRET: ci-unit-test-secret
+          ADMIN_USERNAME: ciadmin
+          ADMIN_PASSWORD: ciadminpass123
+          DB_PATH: ':memory:'
+      - run: npm run test:client
 
   e2e:
     needs: unit

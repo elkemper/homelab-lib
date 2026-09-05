@@ -2,12 +2,20 @@ import Database from 'better-sqlite3';
 import config from '../config';
 import { BookData, BookDataWithSeries } from '../models/booksAndSearch';
 
-const connection = new Database(config.dbPath, {
-  fileMustExist: true,
-});
+const connection = {
+  db: null as Database.Database | null,
+  get(): Database.Database {
+    if (!this.db) {
+      this.db = new Database(config.dbPath, {
+        fileMustExist: true,
+      });
+    }
+    return this.db;
+  },
+};
 
 export async function getBook(bookId: string): Promise<BookData> {
-  const sql = connection.prepare<string>(`
+  const sql = connection.get().prepare<string>(`
     SELECT bb.Folder, bb.FileName, bb.Ext
     FROM Books bb
     WHERE bb.BookID = ?
@@ -18,7 +26,7 @@ export async function getBook(bookId: string): Promise<BookData> {
 }
 
 export async function getBookData(bookId: string): Promise<BookDataWithSeries[]> {
-  const sql = connection.prepare<string>(`
+  const sql = connection.get().prepare<string>(`
     SELECT bb.BookID, aa.FirstName, aa.MiddleName, aa.LastName, bb.Title, bb.Lang, ss.SeriesTitle, bb.SeqNumber
     FROM Books bb
     JOIN Author_List al ON bb.BookID = al.BookID

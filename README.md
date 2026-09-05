@@ -60,6 +60,7 @@ rebuild adds ~50MB and takes seconds on large libraries.
   5-minute URL, the file streams as `<Title>.fb2`.
 - **Admin** — log in as the admin user to manage accounts. Deleting the
   admin (`id=0`) is refused; deleting a user invalidates their sessions.
+  New users need a username (3+ chars) and password (8–72 chars).
 
 ## Configuration
 
@@ -69,12 +70,12 @@ All via environment (or `packages/server/.env` for local runs):
 |---|---|---|---|
 | `DB_PATH` | yes | — | SQLite catalog file |
 | `ADMIN_USERNAME` | yes | — | Bootstrapped as user `id=0` on every start |
-| `ADMIN_PASSWORD` | yes | `admin` | Re-applied to the admin user on every start |
-| `JWT_SECRET` | yes | `supersecretjwtkey` | Strong random string in production |
-| `ARCHIVE_PATH` | for downloads | — | Dir with `<Folder>.zip` archives |
+| `ADMIN_PASSWORD` | yes | — | No default: server refuses to boot without it. Re-applied to the admin user on every start |
+| `JWT_SECRET` | yes | — | No default: server refuses to boot without it. Strong random string in production |
+| `ARCHIVE_PATH` | for downloads | — | Dir with `<Folder>.zip` archives. Relative paths resolve from the server's working dir — absolute path recommended |
 | `PORT` | no | `3214` | |
 | `REQUEST_RATE_LIMIT` | no | `20` | Requests per 10s window, per IP |
-| `ALLOWED_ORIGINS` | no | `http://localhost:3000` | Currently unused (CORS is `*`) |
+| `ALLOWED_ORIGINS` | no | `http://localhost:3000` | CORS whitelist (comma-separated); non-listed `Origin`s get no CORS headers |
 
 ---
 
@@ -86,7 +87,9 @@ Prerequisites: Node.js **v24**, npm; for e2e/CI also `sqlite3`, `zip`, Docker.
 
 - `packages/server`: Koa backend — `db/`, `routes/` + `controllers/`,
   `migrations/` (knex, incl. the grouped/prefix FTS rebuild), `tests/unit/`.
-- `packages/client`: React frontend.
+- `packages/client`: Preact + Vite frontend (ES2017 + legacy build for
+  Chrome ≥60, RU/EN i18n, hand-written CSS, no UI frameworks), `src/lib/`
+  (fetch API client, pagination, hash router) + vitest suites.
 - `packages/tests`: black-box API e2e (vitest + `fetch`, no UI) with SQL seed.
 - `scripts/e2e.sh`: one e2e entry point, locally and in CI.
 - `dockerfile` (lowercase), `docker-compose.yml` (prod),

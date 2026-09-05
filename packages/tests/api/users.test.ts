@@ -35,6 +35,7 @@ describe('users', () => {
     expect(deleted.status).toBe(204);
 
     const gone = await login('e2euser', 'e2epass123');
-    expect(gone.status).toBe(404);
+    // Deleted user === unknown user: generic 401, no enumeration.
+    expect(gone.status).toBe(401);
   });
 });

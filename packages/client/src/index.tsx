@@ -1,16 +1,6 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
+import { render } from 'preact';
 import App from './app';
-import { BrowserRouter } from 'react-router-dom';
+import './index.css';
 
-const container = document.getElementById('root');
-const root = createRoot(container!); // createRoot(container!) if you use TypeScript
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
-
+const root = document.getElementById('root');
+if (root) render(<App />, root);

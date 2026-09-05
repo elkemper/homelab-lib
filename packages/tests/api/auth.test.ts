@@ -13,9 +13,9 @@ describe('auth', () => {
     expect(res.status).toBe(401);
   });
 
-  it('unknown user is 404', async () => {
+  it('unknown user is 401 (same as wrong password, no enumeration)', async () => {
     const res = await login('no-such-user', 'whatever');
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(401);
   });
 
   it('search without token is 401', async () => {
