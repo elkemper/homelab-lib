@@ -8,4 +8,7 @@ services:
     environment:
       - DB_PATH=$DB_PATH
       - ARCHIVE_PATH=$ARCHIVE_PATH
+      - ADMIN_USERNAME=$ADMIN_USERNAME
+      - ADMIN_PASSWORD=$ADMIN_PASSWORD
+      - JWT_SECRET=$JWT_SECRET
 
