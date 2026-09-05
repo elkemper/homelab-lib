@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import config from './config';
 import BookCard from './bookCard';
@@ -27,7 +26,6 @@ export default function Search() {
   const [pageNo, setPageNo] = useState<number>(0);
   const [count, setCount] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
   const { token, logout } = useAuth();
 
   const httpClient = axios.create({
