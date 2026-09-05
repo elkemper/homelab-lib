@@ -1,11 +1,15 @@
 import bcrypt from 'bcrypt';
+import { randomUUID } from 'node:crypto';
 import * as db from '../db';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 
 export function generateToken(username: string) {
+  // jti makes every token unique: without it, two logins in the same second
+  // produce byte-identical JWTs and collide on UNIQUE sessions.token (500).
   const payload = {
     username,
+    jti: randomUUID(),
   };
 
   if (!config.jwtSecret) {

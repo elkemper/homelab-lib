@@ -8,9 +8,9 @@ interface Book {
   Title: string;
   Author: string;
   Cover: string;
-  FirstName: string;
-  MiddleName: string;
-  LastName: string;
+  authors: string;
+  SeriesTitle: string | null;
+  SeqNumber: number | null;
   Lang: string;
   // Add other properties of a book if known
 }
@@ -73,9 +73,16 @@ export default function BookCard(props: BookCardProps) {
       <div className="card--content">
         <h3 className="card--title">{book.Title}</h3>
         <p>
-          <small>Author: {book.FirstName + ' ' + book.MiddleName + ' ' + book.LastName}</small>
+          <small>Author: {book.authors}</small>
         </p>
         <small>Language: {book.Lang}</small>
+        <br />
+        {book.SeriesTitle ? (
+          <small>
+            Series: {book.SeriesTitle}
+            {book.SeqNumber ? ` #${book.SeqNumber}` : null}
+          </small>
+        ) : null}
         <br />
         <button className="button--download" onClick={() => downloadBook(book.BookID)}>
           Download
