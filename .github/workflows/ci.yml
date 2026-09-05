@@ -26,6 +26,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm install
+      # Only the test driver deps: the app itself builds inside Docker.
+      - run: npm --prefix packages/tests ci
       - run: command -v sqlite3 && command -v zip || sudo apt-get install -y sqlite3 zip
       - run: TARGET=compose ./scripts/e2e.sh

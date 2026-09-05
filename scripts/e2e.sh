@@ -13,13 +13,6 @@ export E2E_JWT_SECRET="${E2E_JWT_SECRET:-e2e-ci-secret}"
 DATA="$ROOT/.ci-data"
 DB="$DATA/ci.hlc2"
 
-need_vitest() {
-  if ! npm ls vitest --workspace=homelab-lib.tests >/dev/null 2>&1; then
-    echo "vitest not found — run 'npm install' at repo root first" >&2
-    exit 1
-  fi
-}
-
 seed() {
   rm -rf "$DATA"
   mkdir -p "$DATA"
@@ -31,11 +24,10 @@ run_tests() {
   # Explicit && chain: inside run_tests, set -e is disabled (callers use
   # run_tests || ...), so a failed health check must not fall through to vitest.
   sh "$ROOT/packages/tests/e2e/wait-for-health.sh" && \
-    (cd "$ROOT" && npm run test:e2e --workspace=homelab-lib.tests)
+    npm --prefix "$ROOT/packages/tests" run test:e2e
 }
 
 if [ "$TARGET" = "local" ]; then
-  need_vitest
   seed
   (cd "$ROOT/packages/server" && npm run build)
   # Same semantics as start-server (migrate + run), split so the server PID is
@@ -57,7 +49,6 @@ if [ "$TARGET" = "local" ]; then
 fi
 
 # compose (default)
-need_vitest
 command -v docker >/dev/null || { echo "docker not found (use TARGET=local)" >&2; exit 1; }
 seed
 (cd "$ROOT" && docker compose -f docker-compose.ci.yml up --build -d)
