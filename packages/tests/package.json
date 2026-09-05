@@ -1,0 +1,12 @@
+{
+  "name": "homelab-lib.tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Black-box API e2e tests",
+  "scripts": {
+    "test:e2e": "vitest run --config vitest.e2e.config.mts"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.0"
+  }
+}

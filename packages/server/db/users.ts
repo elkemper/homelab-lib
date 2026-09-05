@@ -32,9 +32,10 @@ export function updateUser(user: User): void {
   statement.run(user.username, user.password, user.email, user.id);
 }
 
-export function createUser(user: User): void {
+export function createUser(user: User): number {
   const statement = db.prepare('INSERT INTO users (username, password, email, id) VALUES (?, ?, ?, ?)');
-  statement.run(user.username, user.password, user.email, user.id);
+  const info = statement.run(user.username, user.password, user.email, user.id);
+  return Number(info.lastInsertRowid);
 }
 
 export function deleteUser(id: number) {

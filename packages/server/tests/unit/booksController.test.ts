@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('../../db', () => ({
   getBook: vi.fn(),
@@ -20,6 +20,12 @@ import booksController from '../../controllers/booksController';
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // getBookStream logs its inputs (app debug output); silence the expected noise.
+  vi.spyOn(console, 'log').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('getBookStream', () => {

@@ -94,7 +94,10 @@ describe('verifySessionToken', () => {
   });
 
   it('false for garbage token', async () => {
+    // verifySessionToken logs caught errors; silence the expected noise.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     expect(await verifySessionToken('not-a-token')).toBe(false);
+    errorSpy.mockRestore();
   });
 
   it('false and deletes session for expired token', async () => {

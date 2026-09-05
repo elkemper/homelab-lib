@@ -1,0 +1,25 @@
+# Ephemeral CI environment for API e2e. Never used for prod.
+# Data dir ./​.ci-data is created by scripts/e2e.sh (seed.sql + fake archives).
+services:
+  homelab-lib:
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    image: homelab-lib:ci
+    ports:
+      - "3214:3214"
+    volumes:
+      - ./.ci-data:/app/data
+    environment:
+      - DB_PATH=/app/data/ci.hlc2
+      - ARCHIVE_PATH=/app/data/archive
+      - ADMIN_USERNAME=${E2E_ADMIN_USERNAME:-e2eadmin}
+      - ADMIN_PASSWORD=${E2E_ADMIN_PASSWORD:-e2epass}
+      - JWT_SECRET=${E2E_JWT_SECRET:-e2e-ci-secret}
+      - REQUEST_RATE_LIMIT=1000
+      - PORT=3214
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3214/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20

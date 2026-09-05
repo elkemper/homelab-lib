@@ -34,6 +34,8 @@ RUN apk add --no-cache python3 make g++
 # Copy only necessary runtime files from builder
 COPY --from=builder /app/packages/server/dist ./packages/server/dist
 COPY --from=builder /app/packages/client/build ./packages/client/build
+COPY --from=builder /app/packages/server/migrations ./packages/server/migrations
+COPY --from=builder /app/packages/server/knexfile.ts ./packages/server/knexfile.ts
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/packages/server/package.json ./packages/server/package.json
@@ -42,5 +44,6 @@ COPY --from=builder /app/packages/server/package.json ./packages/server/package.
 WORKDIR /app/packages/server
 RUN npm install --production
 
-# Command to run the server
-CMD ["node", "dist/app.js"]
+# Command to run the server (migrations first: the sqlite file lives on a volume
+# and is only present at container start; start-server = migrate + run)
+CMD ["npm", "run", "start-server"]

@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+// dotenv re-reads packages/server/.env on every re-import (vi.resetModules below),
+// refilling the vars this suite deletes to simulate "missing env". Neutralize it
+// so config reads pure process.env and these tests don't depend on a local .env.
+vi.mock('dotenv', () => ({ default: { config: vi.fn() } }));
+
 describe('startupChecks', () => {
   const savedEnv = { ...process.env };
   let exitCode: number | undefined;

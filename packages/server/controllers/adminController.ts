@@ -13,7 +13,8 @@ export async function createOrUpdateAdmin(): Promise<void> {
       return db.updateUser({ id: 0, username: adminUsername, password: hashedPassword });
     } else {
       const hashedPassword = await hashPassword(adminPassword);
-      return db.createUser({ id: 0, username: adminUsername, password: hashedPassword });
+      db.createUser({ id: 0, username: adminUsername, password: hashedPassword });
+      return;
     }
   } catch (error) {
     console.error('Failed to create or update admin:', error);
