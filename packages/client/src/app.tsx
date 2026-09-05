@@ -1,33 +1,38 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-
-import Search from './Search';
-import Login from './Login';
 import { AuthProvider, useAuth } from './AuthContext';
+import Header from './components/Header';
+import Login from './pages/Login';
+import Search from './pages/Search';
+import Users from './pages/Users';
+import { useRoute } from './lib/router';
 
-function AppContent() {
+function Shell() {
   const { isLoggedIn } = useAuth();
+  const route = useRoute();
 
+  if (!isLoggedIn) {
+    return (
+      <>
+        <Header />
+        <main className="container">
+          <Login />
+        </main>
+      </>
+    );
+  }
   return (
-    <Routes>
-      <Route path="/" element={isLoggedIn ? <Navigate to="/search" /> : <Navigate to="/login" />} />
-      <Route path="/search" element={isLoggedIn ? <Search /> : <Navigate to="/login" />} />
-      <Route path="/login" element={isLoggedIn ? <Navigate to="/search" /> : <Login />} />
-    </Routes>
+    <>
+      <Header />
+      <main className="container">
+        {route.name === 'users' ? <Users /> : <Search route={route} />}
+      </main>
+    </>
   );
 }
 
-function App() {
+export default function App() {
   return (
-    <React.StrictMode>
-      <h1 className="title">HomeLab Lib</h1>
-      <div className="container">
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </div>
-    </React.StrictMode>
+    <AuthProvider>
+      <Shell />
+    </AuthProvider>
   );
 }
-
-export default App;
