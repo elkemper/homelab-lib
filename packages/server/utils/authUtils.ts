@@ -4,11 +4,14 @@ import * as db from '../db';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 
-export function generateToken(username: string) {
+export function generateToken(username: string, isAdmin = false) {
   // jti makes every token unique: without it, two logins in the same second
   // produce byte-identical JWTs and collide on UNIQUE sessions.token (500).
+  // isAdmin is baked in at login so the client can gate admin UI without
+  // an extra round trip (server re-checks id===0 in requireAdmin anyway).
   const payload = {
     username,
+    isAdmin,
     jti: randomUUID(),
   };
 
@@ -47,7 +50,7 @@ export async function authenticateUser(username: string, password: string): Prom
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (passwordMatch) {
     // Generate a session token
-    const token = await generateToken(username);
+    const token = await generateToken(username, user.id === 0);
     const { exp } = jwt.decode(token) as { exp: number };
     // Save the session token in the database for the user
     await db.saveSessionToken(user.id, token, exp);

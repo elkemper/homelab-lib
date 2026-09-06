@@ -31,6 +31,14 @@ describe('generateToken', () => {
     const decoded = jwt.verify(token, config.jwtSecret) as { username: string };
     expect(decoded.username).toBe('bob');
   });
+
+  it('bakes isAdmin=false by default, true for the admin', () => {
+    const userToken = jwt.verify(generateToken('bob'), config.jwtSecret) as { isAdmin: boolean };
+    expect(userToken.isAdmin).toBe(false);
+
+    const adminToken = jwt.verify(generateToken('root', true), config.jwtSecret) as { isAdmin: boolean };
+    expect(adminToken.isAdmin).toBe(true);
+  });
 });
 
 describe('hashPassword', () => {
@@ -72,6 +80,19 @@ describe('authenticateUser', () => {
     expect(userId).toBe(1);
     expect(savedToken).toBe(token);
     expect(typeof exp).toBe('number');
+  });
+
+  it('marks the token admin for user id 0, plain otherwise', async () => {
+    const hashed = await hashPassword('pw');
+    vi.mocked(db.saveSessionToken).mockResolvedValue(undefined as any);
+
+    vi.mocked(db.getUserByUsername).mockResolvedValue({ id: 0, username: 'root', password: hashed } as any);
+    const adminToken = (await authenticateUser('root', 'pw')) as string;
+    expect((jwt.verify(adminToken, config.jwtSecret) as { isAdmin: boolean }).isAdmin).toBe(true);
+
+    vi.mocked(db.getUserByUsername).mockResolvedValue({ id: 5, username: 'bob', password: hashed } as any);
+    const userToken = (await authenticateUser('bob', 'pw')) as string;
+    expect((jwt.verify(userToken, config.jwtSecret) as { isAdmin: boolean }).isAdmin).toBe(false);
   });
 
   it('returns null for bad password or no user', async () => {
