@@ -20,7 +20,9 @@ export default function BookCard({ book }: { book: Book }) {
         window.location.hash = '#/login';
         return;
       }
-      setError(t('book.downloadError'));
+      // 404 comes from the mint pre-check: book is not on disk, so no
+      // navigation ever started — show it inline, stay on the page.
+      setError(e instanceof ApiError && e.status === 404 ? t('book.notInArchive') : t('book.downloadError'));
     } finally {
       setBusy(false);
     }
