@@ -35,7 +35,7 @@ books.get('/books/download', async (ctx) => {
       const bookData = await booksController.getBookData(bookId);
       ctx.body = bookstream;
       ctx.type = 'application/xml';
-      ctx.attachment(safeDownloadName(bookData.length ? bookData[0].Title : null, bookId));
+      setDownloadDisposition(ctx, bookData.length ? bookData[0].Title : null, bookId);
     }
   } catch (e) {
     console.error(e);
@@ -63,23 +63,58 @@ books.get('/books/:id', async (ctx) => {
 books.get('/books/:id/download', async (ctx) => {
   try {
     const bookId = ctx.params['id'];
+    // Pre-flight: never mint a token for a book that isn't on disk —
+    // the client shows an inline error instead of landing on a blank 404.
+    const availability = await booksController.canDownload(bookId);
+    if (availability !== 'ok') {
+      ctx.status = 404;
+      ctx.body = { message: 'Book is not available in the local archive', reason: availability };
+      return;
+    }
     const token = await jwt.sign({ bookId }, config.jwtSecret, { expiresIn: '5m' });
     const downloadUrl = `/books/download?token=${token}`;
 
     ctx.body = { downloadUrl };
   } catch (e) {
     console.error(e);
+    ctx.status = 500;
+    ctx.body = { message: 'Internal error' };
   }
 });
 
 export default books;
 
 /**
- * DB titles go into Content-Disposition — strip anything that could break
- * the header (quotes, CRLF, non-ASCII). Falls back to book-<id>.fb2.
+ * DB titles go into Content-Disposition. Unicode letters are kept
+ * (Cyrillic book names must survive); only header-breakers are stripped:
+ * quotes, backslashes, CR/LF and other control chars. Falls back to
+ * book-<id>.fb2 when nothing usable remains.
  */
-function safeDownloadName(title: string | null, bookId: string): string {
-  const cleaned = (title || '').replace(/[^A-Za-z0-9 _.-]+/g, '').trim().slice(0, 80);
+export function safeDownloadName(title: string | null, bookId: string): string {
+  const cleaned = (title || '')
+    // eslint-disable-next-line no-control-regex
+    .replace(/["\\\r\n\x00-\x1f\x7f]+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 100);
   const base = cleaned || `book-${bookId}`;
   return `${base}.fb2`;
+}
+
+/**
+ * RFC 5987: `filename` (plain ASCII, for ancient clients incl. e-ink
+ * readers) + `filename*` (UTF-8, for modern browsers). Either survives
+ * on its own, so Cyrillic names download correctly everywhere.
+ */
+export function setDownloadDisposition(
+  ctx: { set: (field: string, value: string) => void },
+  title: string | null,
+  bookId: string
+): void {
+  const asciiFallback = `book-${String(bookId).replace(/[^A-Za-z0-9_-]/g, '') || 'book'}.fb2`;
+  const fullName = safeDownloadName(title, bookId);
+  ctx.set(
+    'Content-Disposition',
+    `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(fullName)}`
+  );
 }

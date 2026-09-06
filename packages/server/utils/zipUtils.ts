@@ -18,3 +18,17 @@ export default async function getFile(zipPath: string, searchedFile: string): Pr
     throw e;
   }
 }
+
+/**
+ * checks whether an entry exists inside the archive (no data read).
+ * Always closes the handle, even on corrupt zips.
+ */
+export async function hasEntry(zipPath: string, searchedFile: string): Promise<boolean> {
+  const zip = new StreamZip.async({ file: zipPath });
+  try {
+    const entries = await zip.entries();
+    return Object.prototype.hasOwnProperty.call(entries, searchedFile);
+  } finally {
+    await zip.close();
+  }
+}

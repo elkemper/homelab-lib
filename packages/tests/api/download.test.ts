@@ -26,10 +26,22 @@ describe('download', () => {
     expect(res.status).toBe(200);
     const text = await res.text();
     expect(text).toContain('E2E-FAKE-FB2-BOOK-1');
+    // RFC 5987 disposition: ascii fallback + utf-8 filename*.
+    const cd = res.headers.get('content-disposition') || '';
+    expect(cd).toContain('attachment');
+    expect(cd).toContain("filename*=UTF-8''");
+    expect(decodeURIComponent(cd.split("filename*=UTF-8''")[1])).toContain('.fb2');
   });
 
   it('unknown book is 404', async () => {
     const res = await api('/api/books/999999', token);
     expect(res.status).toBe(404);
+  });
+
+  it('mint for unknown book is 404 with reason (no blank-page navigation)', async () => {
+    const res = await api('/api/books/999999/download', token);
+    expect(res.status).toBe(404);
+    const body = (await res.json()) as { reason: string };
+    expect(body.reason).toBe('no_book');
   });
 });
